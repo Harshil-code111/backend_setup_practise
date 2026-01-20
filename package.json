@@ -1,0 +1,12 @@
+{
+  "name": "set_up",
+  "version": "1.0.0",
+  "description": "backend_practise",
+  "license": "ISC",
+  "author": "Harshil Gandhi",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  }
+}
