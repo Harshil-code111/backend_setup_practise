@@ -15,7 +15,7 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: true,
         unique: true,
-        lowecase: true,
+        lowercase: true,
         trim: true,
     },
     fullName: {
@@ -48,38 +48,16 @@ const userSchema = new mongoose.Schema({
 }, { timestamps: true })
 
 userSchema.pre("save", async function (next) {
-    if(!this.isModified("password")) return next();
+    if(!this.isModified("password")) return;
 
-    this.password = bcrypt.hash(this.password, 10)
-    next()
+    this.password = await bcrypt.hash(this.password, 10)
+ 
 })
 
 userSchema.methods.isCorrectPassword=async function(password){
     return await bcrypt.compare(password,this.password)
 }
 
-userSchema.methods.generateAccessToken=function(){
-    return jwt.sign(
-        {
-            userId: this._id,
-            username: this.username,
-            email: this.email
-        }
-        ,process.env.ACCESS_TOKEN_SECRET,
-        {expiresIn:process.env.ACCESS_TOKEN_EXPIRY}
-    )
-}
-userSchema.methods.generateAccessToken=function(){
-    return jwt.sign(
-        {
-            userId: this._id,
-            username: this.username,
-            email: this.email
-        }
-        ,process.env.ACCESS_TOKEN_SECRET,
-        {expiresIn:process.env.ACCESS_TOKEN_EXPIRY}
-    )
-}
 userSchema.methods.generateAccessToken=function(){
     return jwt.sign(
         {

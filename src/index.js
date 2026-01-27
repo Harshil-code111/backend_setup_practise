@@ -2,11 +2,11 @@ import dotenv from "dotenv";
 dotenv.config({
     path: "./.env"
 });
-// import express from "express";
+import express from "express";
 // import mongoose from "mongoose";
 // import { DB_NAME } from "../../constants.js";
 import { connectDB } from "./db/index.js";  
-
+import { app } from "./app.js";
 
 connectDB()
 .then(()=>{
@@ -18,8 +18,8 @@ connectDB()
     console.log("MONGODB connection failed",error)
 })
 
+
 /*
-const app = express();
 
 
 (async () => {
