@@ -99,7 +99,7 @@ const updateTweet = asyncHandler(async (req, res) => {
         { content: content.trim() },
         { new: true }
     );
-
+    
     if (!updatedTweet) {
         throw new ApiError(404, "Tweet not found");
     }
