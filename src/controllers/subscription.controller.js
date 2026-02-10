@@ -46,13 +46,16 @@ const toggleSubscription = asyncHandler(async (req, res) => {
 const getUserChannelSubscribers = asyncHandler(async (req, res) => {
     const { channelId } = req.params
     const { page = 1, limit = 10 } = req.query
+    const pageNum = parseInt(page)
+    const limitNum = parseInt(limit)
+
     if (!channelId?.trim() || !isValidObjectId(channelId)) {
         throw new ApiError(400, "Invalid channel id")
     }
     const subscribers = await Subscription.find({ channel: channelId })
         .populate("subscriber", "name avatar")
-        .skip((page - 1) * limit)
-        .limit(limit)
+        .skip((pageNum - 1) * limitNum)
+        .limit(limitNum)
         .sort({ createdAt: -1 })
 
     return res
@@ -71,14 +74,16 @@ const getSubscribedChannels = asyncHandler(async (req, res) => {
     }
 
     const { page = 1, limit = 10 } = req.query
+    const pageNum = parseInt(page)
+    const limitNum = parseInt(limit)
     if (!subscriberId?.trim() || !isValidObjectId(subscriberId)) {
         throw new ApiError(400, "Invalid subscriber id")
     }
 
     const channels = await Subscription.find({ subscriber: subscriberId })
         .populate("channel", "name avatar")
-        .skip((page - 1) * limit)
-        .limit(limit)
+        .skip((pageNum - 1) * limitNum)
+        .limit(limitNum)
         .sort({ createdAt: -1 })
 
     return res

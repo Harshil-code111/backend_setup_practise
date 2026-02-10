@@ -3,7 +3,9 @@ import { Like } from "../models/like.model.js"
 import { ApiError } from "../utils/apiError.js"
 import { ApiResponse } from "../utils/apiResponse.js"
 import { asyncHandler } from "../utils/asyncHandler.js"
-
+import { Video } from "../models/video.model.js"
+import { Comment } from "../models/comment.model.js"
+import { Tweet } from "../models/tweet.model.js"
 
 const toggleVideoLike = asyncHandler(async (req, res) => {
     const { videoId } = req.params
@@ -13,13 +15,16 @@ const toggleVideoLike = asyncHandler(async (req, res) => {
     }
     const userId = req.user._id;
 
+    const videoExists = await Video.exists({ _id: videoId });
+    if (!videoExists) throw new ApiError(404, "Video not found");
+
     const existingLikeVideo = await Like.findOne({
         video: videoId,
         likedBy: userId
     })
 
     if (existingLikeVideo) {
-        await existingLikeVideo.deleteOne({ _id: existingLikeVideo._id });
+        await existingLikeVideo.deleteOne();
 
         return res
             .status(200)
@@ -44,13 +49,16 @@ const toggleCommentLike = asyncHandler(async (req, res) => {
     }
     const userId = req.user._id;
 
+    const commentExists = await Comment.exists({ _id: commentId });
+    if (!commentExists) throw new ApiError(404, "Comment not found");
+
     const existingLikeComment = await Like.findOne({
         comment: commentId,
         likedBy: userId
     })
 
     if (existingLikeComment) {
-        await existingLikeComment.deleteOne({ _id: existingLikeComment._id })
+        await existingLikeComment.deleteOne()
 
         return res
             .status(200)
@@ -74,6 +82,9 @@ const toggleTweetLike = asyncHandler(async (req, res) => {
     if (!tweetId || !isValidObjectId(tweetId)) {
         throw new ApiError(400, "Invalid tweet ID")
     }
+    const tweetExists = await Tweet.exists({ _id: tweetId });   
+    if (!tweetExists) throw new ApiError(404, "Tweet not found")
+
     const userId = req.user._id
     const existingLikeTweet = await Like.findOne({
         tweet: tweetId,
@@ -81,7 +92,7 @@ const toggleTweetLike = asyncHandler(async (req, res) => {
 
     })
     if (existingLikeTweet) {
-        await existingLikeTweet.deleteOne({ _id: existingLikeTweet._id })
+        await existingLikeTweet.deleteOne()
 
         return res
             .status(200)
@@ -118,7 +129,7 @@ const getLikedVideos = asyncHandler(async (req, res) => {
         {
             $unwind: "$likedVideo"
         },
-        
+
     ])
     return res
         .status(200)
