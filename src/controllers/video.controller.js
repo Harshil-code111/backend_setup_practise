@@ -70,7 +70,11 @@ const publishAVideo = asyncHandler(async (req, res) => {
     if (title.trim().length > 100) {
         throw new ApiError(400, "title should be less than 100 characters")
     }
-    if (description && description.trim().length > 500) {
+        if (!description || description.trim() === "") {
+        throw new ApiError(400, "description is required")
+    }
+
+    if (description.trim().length > 500) {
         throw new ApiError(400, "description should be less than 500 characters")
     }
     if (!req.files || !req.files.videoFile?.[0] || !req.files.thumbnail?.[0]) {

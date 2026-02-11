@@ -23,7 +23,7 @@ const toggleSubscription = asyncHandler(async (req, res) => {
     // if subscription exists, delete it
     if (existingSubscription) {
 
-        await existingSubscription.deleteOne({ _id: existingSubscription._id })
+        await existingSubscription.deleteOne()
 
         return res
             .status(200)
@@ -48,6 +48,10 @@ const getUserChannelSubscribers = asyncHandler(async (req, res) => {
     const { page = 1, limit = 10 } = req.query
     const pageNum = parseInt(page)
     const limitNum = parseInt(limit)
+    if (pageNum <= 0 || limitNum <= 0) {
+    throw new ApiError(400, "page and limit should be positive integers");
+}
+
 
     if (!channelId?.trim() || !isValidObjectId(channelId)) {
         throw new ApiError(400, "Invalid channel id")
@@ -67,7 +71,7 @@ const getUserChannelSubscribers = asyncHandler(async (req, res) => {
 // controller to return channel list to which user has subscribed
 const getSubscribedChannels = asyncHandler(async (req, res) => {
 
-    const { subscriberId } = req.params
+    const { subscriberId } = req.params._id.toString()
     
     if (subscriberId !== req.user._id.toString()) {
         throw new ApiError(403, "You are not allowed to view this data")

@@ -36,10 +36,10 @@ const registerUser = asyncHandler(async (req, res) => {
     //send response
 
 
-    const { username, email, password, fullName } = req.body
+    const { username, email, password, fullName } = req.body || {}
     //console.log(req.body);
 
-    if ([username, email, password, fullName].some(field => field?.trim() === "")) {
+    if (!username || !email || !password || !fullName) {
         throw new ApiError(400, "All fields are required")
     }
 
@@ -100,10 +100,10 @@ const loginUser = asyncHandler(async (req, res) => {
     //access and refresh token
     //send cookie
 
-    const { username, email, password } = req.body
+    const { username, email, password } = req.body || {}
 
-    if (!username && !email) {
-        throw new ApiError(400, "Username or email is required")
+    if ((!username && !email) || !password) {
+        throw new ApiError(400, "username or email and password are required")
     }
 
     const user = await User.findOne({
